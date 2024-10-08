@@ -1,5 +1,9 @@
-import Scene from "@/components/scene";
+import dynamic from 'next/dynamic';
+
 import Albums from "@/components/albums";
+
+const Scene = dynamic(() => import("@/components/scene"), { ssr: false });
+
 
 const Home = async () => {
   return (

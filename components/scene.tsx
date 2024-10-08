@@ -1,32 +1,37 @@
 "use client";
 
 import * as THREE from "three";
-import { OrbitControls } from "@react-three/drei";
+import { ScrollControls } from '@react-three/drei';
 import { Canvas } from "@react-three/fiber";
-import { useControls } from "leva";
+import { Leva } from "leva";
+import { useState } from "react";
+import Albums from './albums';
 
-const CameraHelper = () => {
-  const camera = new THREE.PerspectiveCamera(60, 1, 1, 3);
+export default function Scene() {
+  const [albumCount, setAlbumCount] = useState(0);
+  const [visibleRows, setVisibleRows] = useState(0);
+  
+  const pagesCount = Math.ceil(albumCount / (visibleRows * visibleRows));
+  const cameraPosition = new THREE.Vector3(500, 150, 600);
+
   return (
-    <group position={[0, 0, 8]}>
-      <cameraHelper args={[camera]} />
-    </group>
-  );
-};
+    <>
+      <Canvas
+        orthographic
+        camera={{ position: cameraPosition, zoom: 120 }}
+        style={{ width: "100vw", height: "100vh", position: "fixed", top: 0, left: 0 }}
+      >
+        <ambientLight intensity={2.8} />
 
-export default function Scene({ children }: { children: React.ReactNode }) {
-  return (
-    <Canvas
-      orthographic
-      camera={{ position: [0, 0, 8], zoom: 100 }}
-      style={{ width: "100vw", height: "100vh" }}
-    >
-      <ambientLight />
-      <pointLight position={[10, 10, 10]} />
-
-      <OrbitControls />
-
-      {children}
-    </Canvas>
+        <ScrollControls infinite pages={pagesCount > 0 ? pagesCount : 1} damping={0.1}>
+          <Albums 
+            setAlbumCount={setAlbumCount} 
+            setVisibleRows={setVisibleRows} 
+            cameraPosition={cameraPosition}
+          />
+        </ScrollControls>
+      </Canvas>
+      <Leva collapsed />
+    </>
   );
 }
